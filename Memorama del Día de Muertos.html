@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Memorama del Día de Muertos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sancreek&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: guirnalda de papel picado arriba, barra de juego, tablero centrado; un solo tema "noche de vela". */
+:root{
+  --noche:#1a0f31;
+  --noche-2:#2b1a4f;
+  --cempasuchil:#ff9f1c;
+  --rosa:#e6007e;
+  --turquesa:#19b3a3;
+  --hueso:#fbf3e4;
+  --tinta:#2a1a4d;
+  --display:"Sancreek", "Rye", Georgia, serif;
+  --body:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  background:
+    radial-gradient(1200px 500px at 50% -10%, rgba(255,159,28,.18), transparent 60%),
+    var(--noche);
+  color:var(--hueso);
+  font-family:var(--body);
+  font-size:18px;
+}
+button{font-family:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--cempasuchil);outline-offset:3px}
+
+/* Guirnalda */
+.guirnalda{display:block;width:100%;height:70px}
+.guirnalda .flag{transform-origin:top center;animation:mecer 4s ease-in-out infinite}
+@keyframes mecer{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+
+header{padding:0 16px;text-align:center;margin-top:-6px}
+h1{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(28px,4.6vw,54px);margin:0;line-height:1.05;
+  color:var(--cempasuchil);
+  text-shadow:3px 3px 0 var(--rosa);
+  letter-spacing:.02em;text-wrap:balance;
+}
+.sub{margin:4px 0 0;font-size:clamp(16px,1.8vw,20px);opacity:.85}
+
+/* Controles */
+.controles{
+  display:flex;flex-wrap:wrap;gap:10px 18px;justify-content:center;align-items:center;
+  padding:14px 16px 6px;
+}
+.grupo{display:flex;align-items:center;gap:6px}
+.grupo>span{font-size:15px;opacity:.75;margin-right:2px}
+.seg{display:flex;background:var(--noche-2);border-radius:999px;padding:3px}
+.seg button{
+  border:0;background:transparent;color:var(--hueso);
+  padding:5px 13px;border-radius:999px;font-size:16px;font-weight:700;
+}
+.seg button[aria-pressed="true"]{background:var(--cempasuchil);color:var(--tinta)}
+.btn{
+  border:2px solid var(--cempasuchil);background:transparent;color:var(--cempasuchil);
+  padding:5px 14px;border-radius:999px;font-weight:800;font-size:16px;
+}
+.btn.lleno{background:var(--cempasuchil);color:var(--tinta)}
+.btn:hover{filter:brightness(1.1)}
+.toggle{border:0;background:var(--noche-2);color:var(--hueso);padding:6px 12px;border-radius:999px;font-weight:700;font-size:15px}
+.toggle[aria-pressed="false"]{opacity:.5;text-decoration:line-through}
+
+/* Marcador */
+.marcador{
+  display:flex;flex-wrap:wrap;gap:12px;justify-content:center;align-items:stretch;
+  padding:8px 16px 4px;max-width:1240px;margin:0 auto;
+}
+.chip{
+  background:var(--noche-2);border-radius:14px;padding:6px 16px;
+  display:flex;align-items:center;gap:10px;font-weight:700;
+  font-variant-numeric:tabular-nums;border:3px solid transparent;
+}
+.chip b{font-size:26px;line-height:1}
+.chip.eq1{--c:var(--rosa)} .chip.eq2{--c:var(--turquesa)}
+.chip.eq1 b,.chip.eq2 b{color:var(--c)}
+.chip.activo{border-color:var(--c);box-shadow:0 0 18px -4px var(--c)}
+.turno{align-self:center;font-weight:800}
+
+/* Última pareja */
+.ultima{
+  max-width:1240px;margin:6px auto 0;padding:0 16px;
+  display:flex;justify-content:center;
+}
+.ultima .caja{
+  min-height:58px;display:flex;align-items:center;gap:14px;
+  background:rgba(255,255,255,.06);border:2px dashed rgba(255,159,28,.5);
+  border-radius:16px;padding:6px 16px;
+}
+.ultima .mini{width:46px;height:46px;display:grid;place-items:center;font-size:36px}
+.ultima .mini svg{width:46px;height:46px}
+.ultima .es{font-size:26px;font-weight:800;color:var(--cempasuchil)}
+.ultima .it{font-size:17px;opacity:.85}
+.oir{border:0;background:var(--turquesa);color:var(--tinta);border-radius:999px;width:40px;height:40px;font-size:20px;flex:none}
+body.sin-trad .it{display:none}
+
+/* Tablero */
+main{padding:12px 16px 28px}
+.tablero{
+  display:grid;gap:clamp(8px,1.2vw,14px);
+  grid-template-columns:repeat(var(--cols,8),1fr);
+  max-width:1240px;margin:0 auto;
+}
+@media (max-width:760px){.tablero{grid-template-columns:repeat(4,1fr)}}
+.carta{
+  border:0;padding:0;background:transparent;aspect-ratio:4/5;
+  perspective:900px;border-radius:14px;
+}
+.interior{
+  position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,.7,.3,1.2);
+}
+.carta.abierta .interior,.carta.hecha .interior{transform:rotateY(180deg)}
+.cara{
+  position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;
+  display:grid;place-items:center;overflow:hidden;
+}
+.dorso{
+  background-color:var(--rosa);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='%231a0f31' fill-opacity='.55'%3E%3Ccircle cx='20' cy='20' r='4'/%3E%3Cpath d='M20 6l3 5h-6zM20 34l-3-5h6zM6 20l5-3v6zM34 20l-5 3v-6z'/%3E%3Ccircle cx='0' cy='0' r='3'/%3E%3Ccircle cx='40' cy='0' r='3'/%3E%3Ccircle cx='0' cy='40' r='3'/%3E%3Ccircle cx='40' cy='40' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  border:4px solid var(--hueso);
+  box-shadow:0 6px 0 rgba(0,0,0,.35);
+}
+.dorso .flor{width:42%;height:auto;filter:drop-shadow(0 2px 0 rgba(0,0,0,.3))}
+.carta:hover:not(.abierta):not(.hecha) .dorso{transform:translateY(-3px)}
+.frente{
+  transform:rotateY(180deg);background:var(--hueso);color:var(--tinta);
+  border:4px solid var(--cempasuchil);padding:8%;
+}
+.frente.img svg{width:88%;height:auto}
+.frente.img .emoji{font-size:clamp(40px,6vw,82px);line-height:1}
+.frente.pal{background:var(--cempasuchil);border-color:var(--hueso)}
+.frente.pal .palabra{
+  font-family:var(--body);font-weight:800;text-align:center;
+  font-size:clamp(17px,2.1vw,30px);line-height:1.05;text-wrap:balance;
+}
+.frente.pal .art{display:block;font-size:.7em;font-weight:700;opacity:.75}
+.carta.hecha .frente{border-color:var(--turquesa);box-shadow:0 0 0 4px var(--turquesa) inset}
+.carta.hecha{animation:pop .5s ease}
+@keyframes pop{50%{transform:scale(1.06)}}
+.carta.fallo .frente{border-color:var(--rosa)}
+
+/* Capas */
+.capa{
+  position:fixed;inset:0;background:rgba(10,5,22,.82);display:none;
+  align-items:center;justify-content:center;padding:16px;z-index:10;
+}
+.capa.visible{display:flex}
+.panel{
+  background:var(--noche-2);border:3px solid var(--cempasuchil);border-radius:22px;
+  max-width:980px;width:100%;max-height:90%;overflow:auto;padding:22px 24px;
+}
+.panel h2{font-family:var(--display);font-weight:400;color:var(--cempasuchil);margin:0 0 6px;font-size:clamp(26px,3.5vw,40px);text-wrap:balance}
+.panel p{margin:4px 0 14px}
+.vocab{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.vcard{
+  background:var(--hueso);color:var(--tinta);border:0;border-radius:14px;padding:10px;
+  display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;
+}
+.vcard .pic{height:70px;display:grid;place-items:center;font-size:52px}
+.vcard .pic svg{height:70px;width:70px}
+.vcard .es{font-weight:800;font-size:19px;line-height:1.1}
+.vcard .it{font-size:14px;opacity:.75}
+.acciones{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;margin-top:16px}
+
+@media (prefers-reduced-motion:reduce){
+  .interior{transition:none}
+  .guirnalda .flag,.carta.hecha{animation:none}
+}
+</style>
+</head>
+<body>
+<svg class="guirnalda" id="guirnalda" viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+<header>
+  <h1>Memorama del Día de Muertos</h1>
+  <p class="sub">Encuentra las parejas: la palabra y su dibujo.</p>
+</header>
+
+<div class="controles">
+  <div class="grupo"><span>Parejas</span>
+    <div class="seg" id="segParejas">
+      <button data-v="6">6</button><button data-v="8">8</button><button data-v="12">12</button>
+    </div>
+  </div>
+  <div class="grupo"><span>Modo</span>
+    <div class="seg" id="segModo">
+      <button data-v="solo">1 jugador</button><button data-v="equipos">2 equipos</button>
+    </div>
+  </div>
+  <button class="toggle" id="tgTrad" aria-pressed="true">🇮🇹 Traducción</button>
+  <button class="toggle" id="tgSon" aria-pressed="true">🔊 Voz</button>
+  <button class="btn" id="btnVocab">Ver vocabulario</button>
+  <button class="btn lleno" id="btnNueva">Nueva partida</button>
+</div>
+
+<div class="marcador" id="marcador"></div>
+<div class="ultima"><div class="caja" id="ultima"></div></div>
+
+<main><div class="tablero" id="tablero"></div></main>
+
+<div class="capa" id="capaVocab" role="dialog" aria-modal="true" aria-labelledby="tVocab">
+  <div class="panel">
+    <h2 id="tVocab">Vocabulario del Día de Muertos</h2>
+    <p>Toca una tarjeta para escuchar la palabra.</p>
+    <div class="vocab" id="listaVocab"></div>
+    <div class="acciones"><button class="btn lleno" id="cerrarVocab">Cerrar</button></div>
+  </div>
+</div>
+
+<div class="capa" id="capaFin" role="dialog" aria-modal="true" aria-labelledby="tFin">
+  <div class="panel">
+    <h2 id="tFin">¡Felicidades!</h2>
+    <p id="txtFin"></p>
+    <div class="vocab" id="listaFin"></div>
+    <div class="acciones">
+      <button class="btn" id="finVocab">Ver vocabulario</button>
+      <button class="btn lleno" id="otraVez">Jugar otra vez</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------- Dibujos originales ---------- */
+const T = '#2a1a4d';
+const craneo = (eyeA,eyeB)=>`
+  <path d="M50 10c-22 0-36 15-36 35 0 12 6 20 12 25v12c0 4 3 6 6 6h36c3 0 6-2 6-6V70c6-5 12-13 12-25 0-20-14-35-36-35z" fill="#fff" stroke="${T}" stroke-width="3"/>
+  <circle cx="36" cy="46" r="10" fill="${eyeA}"/><circle cx="64" cy="46" r="10" fill="${eyeB}"/>
+  <circle cx="36" cy="46" r="3.5" fill="#fff"/><circle cx="64" cy="46" r="3.5" fill="#fff"/>
+  <path d="M50 67l-5-5a3.2 3.2 0 0 1 5-4 3.2 3.2 0 0 1 5 4z" fill="${T}"/>
+  <rect x="35" y="74" width="30" height="9" rx="2" fill="none" stroke="${T}" stroke-width="2.5"/>
+  <path d="M42.5 74v9M50 74v9M57.5 74v9" stroke="${T}" stroke-width="2.5"/>`;
+const flor = (cx,cy,r,c='#ff9f1c',centro='#e6007e')=>{
+  let s='';for(let i=0;i<8;i++){const a=i*Math.PI/4;s+=`<circle cx="${(cx+Math.cos(a)*r).toFixed(1)}" cy="${(cy+Math.sin(a)*r).toFixed(1)}" r="${(r*0.62).toFixed(1)}" fill="${c}"/>`}
+  return s+`<circle cx="${cx}" cy="${cy}" r="${(r*0.6).toFixed(1)}" fill="${centro}"/>`;
+};
+const SVG = {
+  calavera:`<svg viewBox="0 0 100 100">${craneo('#e6007e','#19b3a3')}${flor(50,24,4)}
+    <path d="M22 40q4-6 8-2M78 40q-4-6-8-2" stroke="#ff9f1c" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+  catrina:`<svg viewBox="0 0 100 100"><g transform="translate(17 34) scale(.66)">${craneo('#6b3fa0','#6b3fa0')}</g>
+    <path d="M26 38c2-16 12-24 24-24s22 8 24 24z" fill="#6b3fa0" stroke="${T}" stroke-width="2.5"/>
+    <ellipse cx="50" cy="39" rx="46" ry="8" fill="#6b3fa0" stroke="${T}" stroke-width="2.5"/>
+    ${flor(36,30,4.5)}${flor(50,25,5,'#e6007e','#ff9f1c')}${flor(64,30,4.5)}
+    <path d="M70 22q14-8 22 4" stroke="#fbf3e4" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+  ofrenda:`<svg viewBox="0 0 100 100">
+    <rect x="8" y="72" width="84" height="18" fill="#6b3fa0" stroke="${T}" stroke-width="2"/>
+    <rect x="18" y="54" width="64" height="18" fill="#8a55c4" stroke="${T}" stroke-width="2"/>
+    <rect x="28" y="36" width="44" height="18" fill="#6b3fa0" stroke="${T}" stroke-width="2"/>
+    <path d="M8 72h84M18 54h64M28 36h44" stroke="#e6007e" stroke-width="4" stroke-dasharray="4 3"/>
+    <rect x="41" y="12" width="18" height="22" fill="#fbf3e4" stroke="${T}" stroke-width="2.5"/>
+    <circle cx="50" cy="20" r="4" fill="${T}"/><path d="M44 31q6-8 12 0" fill="${T}"/>
+    <rect x="22" y="44" width="4" height="10" fill="#fff"/><path d="M24 37q3 4 0 7q-3-3 0-7" fill="#ff9f1c"/>
+    <rect x="74" y="44" width="4" height="10" fill="#fff"/><path d="M76 37q3 4 0 7q-3-3 0-7" fill="#ff9f1c"/>
+    ${flor(16,66,4)}${flor(84,66,4)}${flor(36,48,3)}${flor(64,48,3)}</svg>`,
+  papel:`<svg viewBox="0 0 100 100"><path d="M2 18q48 10 96 0" stroke="${T}" stroke-width="2" fill="none"/>
+    <g><path d="M6 19h28v46l-4.7-5-4.7 5-4.6-5-4.7 5-4.6-5-4.7 5z" fill="#e6007e"/>
+      <circle cx="20" cy="34" r="5" fill="#fbf3e4"/><path d="M14 48h12l-6 7z" fill="#fbf3e4"/></g>
+    <g><path d="M36 22h28v50l-4.7-5-4.7 5-4.6-5-4.7 5-4.6-5-4.7 5z" fill="#ff9f1c"/>
+      ${'' }<circle cx="50" cy="38" r="6" fill="#fbf3e4"/><circle cx="44" cy="54" r="3" fill="#fbf3e4"/><circle cx="56" cy="54" r="3" fill="#fbf3e4"/></g>
+    <g><path d="M66 19h28v46l-4.7-5-4.7 5-4.6-5-4.7 5-4.6-5-4.7 5z" fill="#19b3a3"/>
+      <path d="M80 28l5 8-5 8-5-8z" fill="#fbf3e4"/><circle cx="80" cy="52" r="3.5" fill="#fbf3e4"/></g></svg>`,
+  pan:`<svg viewBox="0 0 100 100"><ellipse cx="50" cy="74" rx="40" ry="9" fill="#a85a1e"/>
+    <path d="M12 72q0-40 38-40t38 40z" fill="#e0943f" stroke="#a85a1e" stroke-width="2.5"/>
+    <path d="M26 64l48-22M26 44l48 22" stroke="#b8692a" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="50" cy="34" r="8" fill="#c97a30"/>
+    <g fill="#fff8e8"><circle cx="34" cy="52" r="1.6"/><circle cx="62" cy="58" r="1.6"/><circle cx="44" cy="62" r="1.6"/><circle cx="68" cy="48" r="1.6"/><circle cx="30" cy="62" r="1.6"/></g></svg>`,
+  tumba:`<svg viewBox="0 0 100 100"><rect x="6" y="80" width="88" height="12" rx="4" fill="#7a4a2a"/>
+    <path d="M28 82V40a22 22 0 0 1 44 0v42z" fill="#a7adc2" stroke="${T}" stroke-width="2.5"/>
+    <path d="M50 34v26M41 43h18" stroke="${T}" stroke-width="4" stroke-linecap="round"/>
+    <path d="M38 70h24" stroke="${T}" stroke-width="2" opacity=".5"/>
+    ${flor(22,78,5)}${flor(78,78,5)}${flor(50,82,4,'#ff9f1c','#ff9f1c')}</svg>`,
+  cempasuchil:`<svg viewBox="0 0 100 100"><path d="M50 60v34" stroke="#3c8a3c" stroke-width="4"/>
+    <path d="M50 80q-14-4-18-14q12 0 18 10M50 86q14-4 18-14q-12 0-18 10" fill="#4caf50"/>
+    ${(()=>{let s='';[[30,'#e8840c'],[23,'#ff9f1c'],[15,'#ffb43c'],[7,'#ffc65c']].forEach(([r,c])=>{const n=Math.round(r*0.9);for(let i=0;i<n;i++){const a=i*2*Math.PI/n;s+=`<circle cx="${(50+Math.cos(a)*r*0.85).toFixed(1)}" cy="${(38+Math.sin(a)*r*0.85).toFixed(1)}" r="${(r*0.3+3).toFixed(1)}" fill="${c}" stroke="#c4650a" stroke-width=".8"/>`}});return s})()}
+    <circle cx="50" cy="38" r="5" fill="#ffd27a"/></svg>`
+};
+
+const VOCAB = [
+  {id:'calavera', art:'la', w:'calavera', it:'il teschio (di zucchero)', svg:'calavera'},
+  {id:'catrina', art:'la', w:'Catrina', it:'la Catrina, la signora scheletro', svg:'catrina'},
+  {id:'ofrenda', art:'la', w:'ofrenda', it:"l'altare delle offerte", svg:'ofrenda'},
+  {id:'papel', art:'el', w:'papel picado', it:'la carta traforata', svg:'papel'},
+  {id:'pan', art:'el', w:'pan de muerto', it:'il pane dei morti', svg:'pan'},
+  {id:'tumba', art:'la', w:'tumba', it:'la tomba', svg:'tumba'},
+  {id:'cempasuchil', art:'el', w:'cempasúchil', it:'il fiore dei morti (tagete)', svg:'cempasuchil'},
+  {id:'vela', art:'la', w:'vela', it:'la candela', emoji:'🕯️'},
+  {id:'foto', art:'la', w:'foto', it:'la foto', emoji:'🖼️'},
+  {id:'hueso', art:'el', w:'hueso', it:"l'osso", emoji:'🦴'},
+  {id:'mariposa', art:'la', w:'mariposa', it:'la farfalla (monarca)', emoji:'🦋'},
+  {id:'guitarra', art:'la', w:'guitarra', it:'la chitarra', emoji:'🎸'},
+  {id:'perro', art:'el', w:'perro', it:'il cane', emoji:'🐕'},
+  {id:'familia', art:'la', w:'familia', it:'la famiglia', emoji:'👪'},
+  {id:'agua', art:'el', w:'agua', it:"l'acqua", emoji:'💧'},
+  {id:'dulces', art:'los', w:'dulces', it:'i dolci', emoji:'🍬'},
+];
+const byId = Object.fromEntries(VOCAB.map(v=>[v.id,v]));
+const pic = v => v.svg ? SVG[v.svg] : `<span class="emoji" aria-hidden="true">${v.emoji}</span>`;
+const full = v => `${v.art} ${v.w}`;
+
+/* ---------- Voz ---------- */
+let voz=null;
+function cargarVoz(){
+  try{const vs=speechSynthesis.getVoices();
+    voz=vs.find(x=>/es[-_]MX/i.test(x.lang))||vs.find(x=>/^es/i.test(x.lang))||null;}catch(e){}
+}
+try{cargarVoz();speechSynthesis.onvoiceschanged=cargarVoz;}catch(e){}
+function decir(t){
+  if(!S.sound) return;
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=voz?voz.lang:'es-MX';if(voz)u.voice=voz;u.rate=.85;speechSynthesis.speak(u);}catch(e){}
+}
+
+/* ---------- Estado ---------- */
+let S = {pairs:8, mode:'solo', trad:true, sound:true, deck:[], open:[], matched:[], moves:0, scores:[0,0], turn:0, last:null, t0:Date.now(), tEnd:null};
+let lock=false;
+const EQ=['Calaveras','Mariposas'];
+const $=id=>document.getElementById(id);
+const barajar=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+
+function nueva(){
+  const elegidas = barajar(VOCAB).slice(0,S.pairs);
+  S.deck = barajar(elegidas.flatMap(v=>[{id:v.id,k:'w'},{id:v.id,k:'i'}]));
+  S.open=[];S.matched=[];S.moves=0;S.scores=[0,0];S.turn=0;S.last=null;S.t0=Date.now();S.tEnd=null;lock=false;
+  $('capaFin').classList.remove('visible');
+  construir();
+}
+
+function construir(){
+  const tb=$('tablero');
+  const n=S.deck.length;
+  tb.style.setProperty('--cols', n<=12?6:8);
+  const florDorso=`<svg class="flor" viewBox="0 0 100 100">${flor(50,50,18,'#ff9f1c','#fbf3e4')}</svg>`;
+  tb.innerHTML=S.deck.map((c,i)=>{
+    const v=byId[c.id];
+    const frente = c.k==='w'
+      ? `<div class="cara frente pal"><span class="palabra"><span class="art">${v.art}</span>${v.w}</span></div>`
+      : `<div class="cara frente img">${pic(v)}</div>`;
+    return `<button class="carta" data-i="${i}" aria-label="Carta ${i+1}"><div class="interior"><div class="cara dorso">${florDorso}</div>${frente}</div></button>`;
+  }).join('');
+  pintar();
+}
+
+function pintar(){
+  document.querySelectorAll('.carta').forEach(el=>{
+    const i=+el.dataset.i, c=S.deck[i];
+    const hecha=S.matched.includes(c.id), abierta=S.open.includes(i);
+    el.classList.toggle('hecha',hecha);
+    el.classList.toggle('abierta',abierta&&!hecha);
+    el.setAttribute('aria-label', (hecha||abierta) ? (c.k==='w'?'Palabra: ':'Dibujo: ')+full(byId[c.id]) : `Carta ${i+1}, boca abajo`);
+  });
+  marcador();ultima();
+  document.querySelectorAll('#segParejas button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===S.pairs));
+  document.querySelectorAll('#segModo button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.mode));
+  $('tgTrad').setAttribute('aria-pressed',S.trad);$('tgSon').setAttribute('aria-pressed',S.sound);
+  document.body.classList.toggle('sin-trad',!S.trad);
+}
+
+const mmss=ms=>{const s=Math.floor(ms/1000);return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`};
+function marcador(){
+  const m=$('marcador');
+  if(S.mode==='solo'){
+    m.innerHTML=`<div class="chip">Parejas <b>${S.matched.length}/${S.pairs}</b></div>
+      <div class="chip">Intentos <b>${S.moves}</b></div>
+      <div class="chip">Tiempo <b id="reloj">${mmss((S.tEnd||Date.now())-S.t0)}</b></div>`;
+  }else{
+    m.innerHTML=[0,1].map(t=>`<div class="chip eq${t+1} ${S.turn===t&&!S.tEnd?'activo':''}">Equipo ${EQ[t]} <b>${S.scores[t]}</b></div>`).join('')
+      + (S.tEnd?'':`<div class="turno">Le toca al equipo ${EQ[S.turn]}</div>`);
+  }
+}
+function ultima(){
+  const u=$('ultima');
+  if(!S.last){u.innerHTML=`<span>Gira dos cartas: una <b>palabra</b> y su <b>dibujo</b>.</span>`;return}
+  const v=byId[S.last];
+  u.innerHTML=`<div class="mini">${pic(v)}</div><div><div class="es">${full(v)}</div><div class="it">${v.it}</div></div>
+    <button class="oir" id="oirUlt" aria-label="Escuchar ${full(v)}">🔊</button>`;
+  $('oirUlt').onclick=()=>{const s=S.sound;S.sound=true;decir(full(v));S.sound=s};
+}
+
+$('tablero').addEventListener('click',e=>{
+  const el=e.target.closest('.carta');if(!el||lock)return;
+  const i=+el.dataset.i,c=S.deck[i];
+  if(S.matched.includes(c.id)||S.open.includes(i))return;
+  S.open.push(i);pintar();
+  if(S.open.length<2)return;
+  S.moves++;
+  const [a,b]=S.open.map(x=>S.deck[x]);
+  if(a.id===b.id&&a.k!==b.k){
+    S.matched.push(a.id);S.last=a.id;S.open=[];
+    if(S.mode==='equipos')S.scores[S.turn]++;
+    decir(full(byId[a.id]));
+    if(S.matched.length===S.pairs){S.tEnd=Date.now();pintar();setTimeout(fin,900);return}
+    pintar();
+  }else{
+    lock=true;
+    S.open.forEach(x=>document.querySelector(`.carta[data-i="${x}"]`).classList.add('fallo'));
+    marcador();
+    setTimeout(()=>{
+      document.querySelectorAll('.carta.fallo').forEach(x=>x.classList.remove('fallo'));
+      S.open=[];if(S.mode==='equipos')S.turn=1-S.turn;lock=false;pintar();
+    },1200);
+  }
+});
+
+function tarjetas(lista){
+  return lista.map(v=>`<button class="vcard" data-id="${v.id}"><div class="pic">${pic(v)}</div><div class="es">${full(v)}</div><div class="it">${v.it}</div></button>`).join('');
+}
+function fin(){
+  let t;
+  if(S.mode==='solo') t=`Has encontrado las ${S.pairs} parejas en ${S.moves} intentos y ${mmss(S.tEnd-S.t0)}.`;
+  else if(S.scores[0]===S.scores[1]) t=`¡Empate! ${S.scores[0]} a ${S.scores[1]}. Las dos familias de muertos están orgullosas.`;
+  else {const g=S.scores[0]>S.scores[1]?0:1; t=`Gana el equipo ${EQ[g]}: ${S.scores[g]} a ${S.scores[1-g]}.`;}
+  $('txtFin').textContent=t+' Repasa las palabras:';
+  $('listaFin').innerHTML=tarjetas(S.matched.map(id=>byId[id]));
+  $('capaFin').classList.add('visible');$('otraVez').focus();
+}
+
+/* ---------- Controles ---------- */
+$('segParejas').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.pairs=+b.dataset.v;nueva()};
+$('segModo').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.mode=b.dataset.v;nueva()};
+$('tgTrad').onclick=()=>{S.trad=!S.trad;pintar()};
+$('tgSon').onclick=()=>{S.sound=!S.sound;pintar()};
+$('btnNueva').onclick=nueva;
+$('otraVez').onclick=nueva;
+const abrirVocab=()=>{$('capaFin').classList.remove('visible');$('listaVocab').innerHTML=tarjetas(VOCAB);$('capaVocab').classList.add('visible');$('cerrarVocab').focus()};
+$('btnVocab').onclick=abrirVocab;$('finVocab').onclick=abrirVocab;
+$('cerrarVocab').onclick=()=>$('capaVocab').classList.remove('visible');
+document.addEventListener('click',e=>{const v=e.target.closest('.vcard');if(v){const s=S.sound;S.sound=true;decir(full(byId[v.dataset.id]));S.sound=s}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.capa').forEach(c=>c.classList.remove('visible'))});
+setInterval(()=>{const r=$('reloj');if(r&&!S.tEnd)r.textContent=mmss(Date.now()-S.t0)},1000);
+
+/* ---------- Guirnalda ---------- */
+(function(){
+  const g=$('guirnalda'),cols=['#e6007e','#ff9f1c','#19b3a3','#8a55c4','#4caf50'];let s=`<path d="M0 6 Q600 22 1200 6" stroke="#fbf3e4" stroke-opacity=".5" fill="none"/>`;
+  for(let i=0;i<24;i++){const x=i*50+6,y=6+16*(1-Math.pow((x+20-600)/600,2));
+    s+=`<g class="flag" style="animation-delay:${(i%5)*-.7}s"><path d="M${x} ${y}h38v42l-6.3-6-6.3 6-6.4-6-6.3 6-6.4-6-6.3 6z" fill="${cols[i%5]}"/>
+      <circle cx="${x+19}" cy="${y+16}" r="5" fill="#1a0f31"/><path d="M${x+13} ${y+28}h12l-6 6z" fill="#1a0f31"/></g>`}
+  g.innerHTML=s;
+})();
+
+/* ---------- Arranque ---------- */
+function start(data){
+  if(data&&data.deck&&data.deck.length){S=Object.assign(S,data);S.open=[];construir();if(S.tEnd)fin();}
+  else nueva();
+}
+window.claude?.hot?.snapshot?.(()=>S);
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
+</body>
+</html>

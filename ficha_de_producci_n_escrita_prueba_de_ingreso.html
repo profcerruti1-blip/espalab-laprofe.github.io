@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ficha de Producción Escrita - Prueba de Ingreso</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+      background-color: #334155;
+      color: #0f172a;
+      line-height: 1.4;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* BARRA DE HERRAMIENTAS Y BOTÓN DE IMPRESIÓN */
+    .toolbar {
+      width: 210mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      background: #1e293b;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
+    }
+
+    .toolbar-title {
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-download {
+      background-color: #2563eb;
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .btn-download:hover {
+      background-color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+
+    /* PÁGINA A4 */
+    .page {
+      background-color: #ffffff;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 18mm 18mm 15mm 18mm;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+      border-radius: 2px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    /* ENCABEZADO Y DATOS ALUMNO */
+    .header-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 14px;
+    }
+
+    .header-table td {
+      border: 1px solid #64748b;
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+
+    .header-title {
+      background-color: #0f172a;
+      color: #ffffff;
+      text-align: center;
+      font-weight: 800;
+      font-size: 15px;
+      padding: 8px !important;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    /* TÍTULOS DE SECCIÓN */
+    .section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 2px solid #2563eb;
+      padding-bottom: 3px;
+      margin-top: 10px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* CAJA DE CONSIGNA */
+    .prompt-box {
+      background-color: #f8fafc;
+      border-left: 4px solid #2563eb;
+      border-top: 1px solid #cbd5e1;
+      border-right: 1px solid #cbd5e1;
+      border-bottom: 1px solid #cbd5e1;
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 13px;
+      color: #1e293b;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    /* REQUISITOS OBLIGATORIOS */
+    .req-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      font-size: 11.5px;
+      background-color: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+
+    .req-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    .req-item i {
+      color: #2563eb;
+      font-size: 12px;
+    }
+
+    /* BANCO DE VOCABULARIO */
+    .vocab-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .vocab-card {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      color: #334155;
+    }
+
+    .vocab-card strong {
+      color: #1e3a8a;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      font-size: 10.5px;
+      letter-spacing: 0.4px;
+    }
+
+    /* ESPACIO DE REDACCIÓN PAUTADO */
+    .writing-space {
+      margin-top: 6px;
+      flex-grow: 1;
+    }
+
+    .lined-paper {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .lined-paper tr {
+      height: 27px;
+    }
+
+    .lined-paper td.line-num {
+      width: 24px;
+      font-size: 10px;
+      color: #94a3b8;
+      text-align: right;
+      padding-right: 8px;
+      border-bottom: 1px solid #e2e8f0;
+      user-select: none;
+      vertical-align: bottom;
+      padding-bottom: 2px;
+    }
+
+    .lined-paper td.line-content {
+      border-bottom: 1px solid #cbd5e1;
+      vertical-align: bottom;
+    }
+
+    /* PAUTA DE EVALUACIÓN / RÚBRICA */
+    .rubric-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 10.5px;
+    }
+
+    .rubric-table th, .rubric-table td {
+      border: 1px solid #cbd5e1;
+      padding: 4px 8px;
+      text-align: center;
+    }
+
+    .rubric-table th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 700;
+    }
+
+    /* PIE DE PÁGINA */
+    .footer-info {
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 10.5px;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 6px;
+    }
+
+    /* REGLAS PARA IMPRESIÓN (PDF) */
+    @media print {
+      body {
+        background-color: #ffffff;
+        padding: 0;
+      }
+
+      .toolbar {
+        display: none !important;
+      }
+
+      .page {
+        box-shadow: none;
+        border: none;
+        width: 100%;
+        height: 100%;
+        padding: 12mm 15mm 10mm 15mm;
+      }
+
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BARRA SUPERIOR CON BOTÓN DE IMPRESIÓN / DESCARGA PDF -->
+  <div class="toolbar">
+    <div class="toolbar-title">
+      <i class="fa-solid fa-file-pdf" style="color: #60a5fa; font-size: 18px;"></i>
+      Ficha de Producción Escrita — Formato Imprimible A4
+    </div>
+    <button class="btn-download" onclick="window.print()">
+      <i class="fa-solid fa-print"></i> Guardar como PDF / Imprimir
+    </button>
+  </div>
+
+  <!-- PÁGINA IMPRESA A4 -->
+  <div class="page">
+    <div>
+      <!-- ENCABEZADO CON DATOS DEL ESTUDIANTE -->
+      <table class="header-table">
+        <tr>
+          <td colspan="4" class="header-title">Prueba de Ingreso — Evaluación de Producción Escrita</td>
+        </tr>
+        <tr>
+          <td style="width: 15%; background-color: #f8fafc; font-weight: bold;">Alumno/a:</td>
+          <td style="width: 50%;"></td>
+          <td style="width: 12%; background-color: #f8fafc; font-weight: bold;">Fecha:</td>
+          <td style="width: 23%;"></td>
+        </tr>
+        <tr>
+          <td style="background-color: #f8fafc; font-weight: bold;">Curso/Grupo:</td>
+          <td></td>
+          <td style="background-color: #f8fafc; font-weight: bold;">Nota:</td>
+          <td style="text-align: center; font-weight: bold; color: #1e3a8a;">/ 10 pts</td>
+        </tr>
+      </table>
+
+      <!-- 1. CONSIGNA DE TRABAJO -->
+      <div class="section-title">
+        <i class="fa-solid fa-pen-nib" style="color: #2563eb;"></i> 1. Consigna de Trabajo (Traccia)
+      </div>
+      <div class="prompt-box">
+        <strong>Redacción: Carta o Correo electrónico a un estudiante de intercambio</strong><br>
+        Escribe una carta o mensaje dirigido a un estudiante de intercambio hispanohablante que vendrá a tu instituto. Cuéntale cómo es tu vida diaria como estudiante, la organización de tu casa y espacio de estudio, tu rutina en la escuela y qué actividades haces en tu tiempo libre según el clima de tu ciudad.
+        <div style="margin-top: 4px; font-weight: 700; color: #2563eb; font-size: 12px;">
+          • Extensión requerida: <strong>120 - 150 palabras</strong>.
+        </div>
+      </div>
+
+      <!-- 2. REQUISITOS GRAMATICALES OBLIGATORIOS -->
+      <div class="section-title">
+        <i class="fa-solid fa-list-check" style="color: #2563eb;"></i> 2. Requisitos Gramaticales Obligatorios
+      </div>
+      <div class="req-grid">
+        <div class="req-item"><i class="fa-solid fa-square-check"></i> Mín. 3 verbos con irregularidad vocálica (e→ie, o→ue, e→i)</div>
+        <div class="req-item"><i class="fa-solid fa-square-check"></i> Mín. 2 verbos en 1.ª persona irregular (yo)</div>
+        <div class="req-item"><i class="fa-solid fa-square-check"></i> Uso contrastado correcto de HAY frente a ESTÁ / ESTÁN</div>
+        <div class="req-item"><i class="fa-solid fa-square-check"></i> Mín. 2 perífrasis de gerundio (estar + gerundio)</div>
+        <div class="req-item" style="grid-column: span 2;"><i class="fa-solid fa-square-check"></i> Uso preciso y adecuado de las preposiciones POR y PARA</div>
+      </div>
+
+      <!-- 3. BANCO DE VOCABULARIO -->
+      <div class="section-title">
+        <i class="fa-solid fa-book-bookmark" style="color: #2563eb;"></i> 3. Banco de Vocabulario Sugerido
+      </div>
+      <div class="vocab-grid">
+        <div class="vocab-card">
+          <strong><i class="fa-solid fa-laptop"></i> Escuela &amp; Informática</strong>
+          portátil, pantalla, correo, descargar archivos, aplicaciones, asignaturas, pizarra, deberes, biblioteca.
+        </div>
+        <div class="vocab-card">
+          <strong><i class="fa-solid fa-house"></i> La Casa &amp; Estudio</strong>
+          dormitorio, escritorio, estantería, ventana, mesa, silla, ordenador, salón, accesorios, ordenado/a.
+        </div>
+        <div class="vocab-card">
+          <strong><i class="fa-solid fa-cloud-sun"></i> Tiempo Atmosférico</strong>
+          hace buen/mal tiempo, llueve, hace frío/sol, está nublado, refresca, clima suave, primavera/invierno.
+        </div>
+        <div class="vocab-card">
+          <strong><i class="fa-solid fa-clock"></i> Rutina &amp; Tiempo Libre</strong>
+          despertarse, desayunar, acostarse, hacer deporte, ver series, quedar con amigos, escuchar música.
+        </div>
+      </div>
+
+      <!-- 4. ESPACIO DE REDACCIÓN -->
+      <div class="section-title">
+        <i class="fa-solid fa-align-left" style="color: #2563eb;"></i> 4. Espacio de Redacción
+      </div>
+    </div>
+
+    <!-- TABLA PAUTADA PARA ESCRIBIR A MANO -->
+    <div class="writing-space">
+      <table class="lined-paper">
+        <tr><td class="line-num">1</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">2</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">3</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">4</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">5</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">6</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">7</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">8</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">9</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">10</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">11</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">12</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">13</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">14</td><td class="line-content"></td></tr>
+        <tr><td class="line-num">15</td><td class="line-content"></td></tr>
+      </table>
+    </div>
+
+    <div>
+      <!-- TABLA DE EVALUACIÓN RÁPIDA -->
+      <table class="rubric-table">
+        <tr>
+          <th>Criterio</th>
+          <th>Adecuación / Extensión (2p)</th>
+          <th>Estructuras Gramaticales (3p)</th>
+          <th>Vocabulario y Cohesión (3p)</th>
+          <th>Corrección Ortográfica (2p)</th>
+          <th>Total</th>
+        </tr>
+        <tr>
+          <td style="font-weight: 600;">Puntos</td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td style="font-weight: 700; background-color: #f8fafc;">/ 10</td>
+        </tr>
+      </table>
+
+      <!-- PIE DE PÁGINA -->
+      <div class="footer-info">
+        <span>Prueba de Admisión de Lengua Española</span>
+        <span>Hoja de Examen de Producción Escrita</span>
+        <span>Puntuación Máxima: 10 Puntos</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+```
+
+He creado la ficha completa en un único archivo HTML autocontenido y optimizado para imprimir o guardar como PDF.
+
+### Características del archivo:
+- **Botón de Impresión/PDF integrado:** Al hacer clic en el botón superior o presionar `Ctrl + P` (o `Cmd + P` en Mac), se abre el diálogo de impresión con los márgenes y proporciones formateados para hoja **A4**.
+- **Estructura clara de examen:**
+  1. **Datos del alumno y calificación:** Encabezado oficial.
+  2. **Consigna (Traccia):** Redacción detallada con límite de palabras.
+  3. **Requisitos gramaticales:** Lista de estructuras obligatorias.
+  4. **Banco de vocabulario organizado:** Categorizado por bloques temáticos.
+  5. **Espacio pautado con numeración:** Líneas numeradas para facilitar el cómputo de palabras.
+  6. **Rúbrica de corrección:** Criterios de evaluación para el profesor en el pie de página.
+
+Quedo a tu disposición si deseas ajustar algún detalle o consigna adicional.
